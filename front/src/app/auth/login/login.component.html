@@ -1,16 +1,47 @@
-<div class="login">
-  <div class="login-box">
-    <h2 translate>Login</h2>
-    <form>
+<div class="auth-container">
+  <div class="auth-box glass">
+    <div class="auth-header text-center">
+      <h2 translate>Login</h2>
+      <p translate>Welcome back!</p>
+    </div>
+
+    <form (ngSubmit)="login()" #loginForm="ngForm">
       <div class="input-field">
-        <input required type="text" />
-        <label translate>Username</label>
+        <label translate>Email</label>
+        <div class="input-wrapper">
+          <input
+            [(ngModel)]="email"
+            name="email"
+            required
+            type="email"
+            autocomplete="username"
+            [placeholder]="'Email' | translate"
+          />
+        </div>
       </div>
+
       <div class="input-field">
-        <input required type="password" />
         <label translate>Password</label>
+        <div class="input-wrapper">
+          <input
+            [(ngModel)]="password"
+            name="password"
+            required
+            type="password"
+            autocomplete="current-password"
+            [placeholder]="'Password' | translate"
+          />
+        </div>
       </div>
-      <button (click)="login()" type="submit">{{ 'Login' | translate }}</button>
+
+      <button [disabled]="loginForm.invalid" class="btn-primary" type="submit">
+        {{ 'Login' | translate }}
+      </button>
+
+      <div class="auth-footer">
+        <p translate>Don't have an account?</p>
+        <a routerLink="/register">{{ 'Register' | translate }}</a>
+      </div>
     </form>
   </div>
 </div>

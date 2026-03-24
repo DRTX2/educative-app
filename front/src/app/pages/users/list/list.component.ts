@@ -1,7 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { UseRandomUser } from '@core/usecases';
-import { RandomUserEntity } from '@core/entities';
-import { HotToastService } from '@ngxpert/hot-toast';
+import { Component, OnInit } from '@angular/core';
+import { AdminUser, AdminUsersService } from '../services/admin-users.service';
 
 @Component({
   selector: 'app-list',
@@ -10,25 +8,47 @@ import { HotToastService } from '@ngxpert/hot-toast';
   standalone: false,
 })
 export class ListComponent implements OnInit {
-  users: RandomUserEntity[] = [];
+  users: AdminUser[] = [];
   isLoading = true;
+  search = '';
 
-  private readonly _useRandomUser = new UseRandomUser();
-  private readonly _toast = inject(HotToastService);
+  constructor(private readonly adminUsersService: AdminUsersService) {}
 
-  ngOnInit() {
-    this._useRandomUser.getAllUsers().subscribe({
-      next: (users) => {
-        this.users = users;
+  ngOnInit(): void {
+    this.adminUsersService.getUsers().subscribe({
+      next: (response) => {
+        this.users = response.data;
         this.isLoading = false;
       },
       error: (error) => {
         console.error(error);
+        this.isLoading = false;
       },
     });
   }
 
-  userClicked() {
-    this._toast.show('User clicked');
+  filteredUsers(): AdminUser[] {
+    const term = this.search.trim().toLowerCase();
+
+    if (!term) {
+      return this.users;
+    }
+
+    return this.users.filter((user) => {
+      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim().toLowerCase();
+      return fullName.includes(term) || (user.email || '').toLowerCase().includes(term);
+    });
+  }
+
+  getFullName(user: AdminUser): string {
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'Sin nombre';
+  }
+
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   }
 }

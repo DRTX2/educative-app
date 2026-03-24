@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from '@app/auth/login/login.component';
 import { AlreadyLoggedCheckGuard } from '@app/auth/guard/authentication.guard';
 import { LogoutComponent } from '@app/auth/logout/logout.component';
+import { RegisterComponent } from './register/register.component';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 
 const routes: Routes = [
@@ -17,6 +18,12 @@ const routes: Routes = [
     path: 'logout',
     component: LogoutComponent,
     data: { title: marker('Logout') },
+  },
+  {
+    path: 'register',
+    canActivate: [AlreadyLoggedCheckGuard],
+    component: RegisterComponent,
+    data: { title: marker('Register') },
   },
 ];
 

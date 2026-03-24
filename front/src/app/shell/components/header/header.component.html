@@ -1,6 +1,23 @@
-<nav>
-  <p class="title" translate>Angular Boiler Plate V18</p>
-  <app-language-selector></app-language-selector>
+<nav class="topbar">
+  <div class="brand-block">
+    <div class="brand-mark">SR</div>
+    <div class="brand-copy">
+      <p class="eyebrow" translate>APP_NAME</p>
+      <h1>{{ currentTitle }}</h1>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <div class="status-pill" [class.offline]="network.isOffline">
+      <span class="status-dot"></span>
+      <span>{{ network.isOnline ? 'Conectado' : 'Modo offline' }}</span>
+    </div>
+    <div class="user-pill">
+      <span>{{ learnerName }}</span>
+      <a routerLink="/logout">Cerrar sesión</a>
+    </div>
+    <app-language-selector></app-language-selector>
+  </div>
 </nav>
 
 <!-- Popover menu -->

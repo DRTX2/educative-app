@@ -1,12 +1,19 @@
 <nav [class.pb]="navExpanded" [class.squeeze]="!navExpanded">
-  <span (click)="toggleSidebar(!navExpanded)" [ngClass]="{ open: navExpanded }" class="toggle-icon">
-    <!-- TODO: You can put any icon here, below span is just temporary for demo purpose  -->
-    <span style="color: var(--gray-400)"><</span>
-  </span>
+  <button (click)="toggleSidebar(!navExpanded)" [ngClass]="{ open: navExpanded }" class="toggle-icon" type="button">
+    {{ navExpanded ? '←' : '→' }}
+  </button>
 
-  <div class="logo-container" routerLink="/">
-    <img alt="Logo" class="logo" src="images/placeholder.png" />
-    <h4>Brand Title</h4>
+  <a class="logo-container" routerLink="/dashboard">
+    <span class="logo-icon">🌱</span>
+    <div class="logo-copy">
+      <p>Aprender y crecer</p>
+      <h4 translate>APP_NAME</h4>
+    </div>
+  </a>
+
+  <div class="sidebar-story">
+    <p class="story-tag">Offline-first</p>
+    <h5>Una experiencia pensada para seguir aprendiendo incluso lejos de la señal.</h5>
   </div>
 
   <div class="navbar-menu-items" dir="auto">
@@ -14,29 +21,15 @@
       @if (shellService.allowedAccess(item)) {
         <div class="menu">
           @if (!item.divider) {
-            <a (click)="activateSidebarItem(i)" [class.active]="item.active" [ngClass]="{ disabled: item.disabled }" class="menu-item" id="menu-item-{{ i }}">
+            <a (click)="activateSidebarItem(i)" [class.active]="item.active" [ngClass]="{ disabled: item.disabled }" class="menu-item" id="menu-item-{{ i }}" [routerLink]="item.href || undefined" routerLinkActive="active">
               <div class="item">
                 @if (item.icon) {
-                  <!-- TODO This below i tag is temporary for demo purposes replace with proper icon passed in menu item -->
-                  @if (item.active) {
-                    <i style="color: var(--gray-400)">^</i>
-                  } @else {
-                    <i style="color: var(--sidebar-icon-color)">^</i>
-                  }
+                  <span class="menu-icon">{{ item.icon }}</span>
                 }
-                <span>{{ item.title | translate }}</span>
+                <span class="menu-title">{{ item.title | translate }}</span>
               </div>
               @if (item.subItems && item.subItems.length) {
-                <span [ngClass]="{ open: sidebarExtendedItem === i }" class="submenu-icon">
-                  <!-- TODO This below i tag is temporary for demo purposes, use any up down arrow icon -->
-                  @if (item.subItems && item.subItems.length && item.active) {
-                    <!-- Active Icon -->
-                    <i style="color: var(--gray-400)">^</i>
-                  } @else if (item.subItems && item.subItems.length && !item.active) {
-                    <!-- Inactive Icon -->
-                    <i style="color: var(--sidebar-icon-color)">^</i>
-                  }
-                </span>
+                <span [ngClass]="{ open: sidebarExtendedItem === i }" class="submenu-icon">⌄</span>
               }
             </a>
             @if (item.subItems && item.subItems.length) {
@@ -45,14 +38,6 @@
                   @if (shellService.allowedAccess(subItem)) {
                     <li [class.disabled]="subItem.disabled">
                       <a (click)="activateSidebarSubItem(i, subItem)" [ngClass]="{ disabled: subItem.disabled }" [routerLink]="subItem.href || undefined" routerLinkActive="active">
-                        <!-- TODO This below i tag is temporary for demo purposes replace with proper icon passed in submenu item -->
-                        @if (item.subItems && item.subItems.length && item.active) {
-                          <!-- Active Icon -->
-                          <i style="color: var(--gray-400)">^</i>
-                        } @else if (item.subItems && item.subItems.length && !item.active) {
-                          <!-- Inactive Icon -->
-                          <i style="color: var(--sidebar-icon-color)">^</i>
-                        }
                         <span>{{ subItem.title | translate }}</span>
                       </a>
                     </li>
@@ -66,5 +51,10 @@
         </div>
       }
     }
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="footer-badge">Comunidad rural</div>
+    <p>Contenidos breves, claros y útiles para que cada estudiante avance a su ritmo.</p>
   </div>
 </nav>

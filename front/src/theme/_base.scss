@@ -1,80 +1,211 @@
-/*
- *  Sets up base styles for the application like body background, font family, etc.
- */
+@use "sass:color";
+@use "variables" as *;
 
-// font import
-
-@font-face {
-  font-family: "Manrope";
-  src: url("/fonts/Manrope-Regular.ttf") format("truetype");
-  font-weight: 400; // Regular weight
-  font-style: normal;
-  font-display: swap;
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-@font-face {
-  font-family: "Manrope";
-  src: url("/fonts/Manrope-Medium.ttf") format("truetype");
-  font-weight: 500; // Medium weight
-  font-style: normal;
-  font-display: swap;
+:root {
+  --brand-primary: #{$primary};
+  --brand-primary-dark: #{$primary-dark};
+  --brand-accent: #{$accent};
+  --brand-background: #{$background};
+  --brand-surface: #{$surface};
+  --brand-border: #{$border};
 }
 
-@font-face {
-  font-family: "Manrope";
-  src: url("/fonts/Manrope-SemiBold.ttf") format("truetype");
-  font-weight: 600; // SemiBold weight
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Manrope";
-  src: url("/fonts/Manrope-Bold.ttf") format("truetype");
-  font-weight: 700; // Bold weight
-  font-style: normal;
-  font-display: swap;
-}
-
-* {
-  padding: 0;
+body {
   margin: 0;
-  font-family: "Manrope", sans-serif;
-  text-rendering: optimizeLegibility;
+  padding: 0;
+  font-family: $font-family;
+  background:
+    radial-gradient(circle at top left, rgba($highlight, 0.45), transparent 32%),
+    radial-gradient(circle at right 15%, rgba($primary-light, 0.22), transparent 28%),
+    linear-gradient(180deg, #f8f4ea 0%, $background 48%, #efe7d4 100%);
+  color: $text-main;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  background-color: var(--surface-1);
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: $text-main;
+  font-family: $font-family-display;
 }
 
-*::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  width: 18px;
-  height: 18px;
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
-*::-webkit-scrollbar-track,
-body::-webkit-scrollbar-track {
-  background-color: #f2f2f2;
-  border-radius: 20px;
-  border: 6px solid transparent;
-  background-clip: content-box;
+a {
+  color: $primary;
+  text-decoration: none;
+  transition: $transition;
+
+  &:hover {
+    color: $primary-dark;
+  }
 }
 
-*::-webkit-scrollbar-thumb,
-body::-webkit-scrollbar-thumb {
-  background-color: #cfd0d1;
-  border-radius: 20px;
-  border: 6px solid transparent;
-  background-clip: content-box;
+button, input, textarea, select {
+  font: inherit;
 }
 
-*[routerLink] {
-  cursor: pointer !important;
+::selection {
+  background: rgba($secondary, 0.35);
 }
 
-*:focus-visible {
-  outline: 1px solid var(--deep-slate-gray);
+// Custom Premium Classes
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background:
+    radial-gradient(circle at 15% 20%, rgba($highlight, 0.55), transparent 26%),
+    radial-gradient(circle at 80% 15%, rgba($primary-light, 0.28), transparent 22%),
+    linear-gradient(135deg, #f9f5eb 0%, #f1ead8 100%);
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 460px;
+  padding: 2.75rem;
+  border-radius: $border-radius-xl;
+}
+
+.glass {
+  background: rgba($surface, 0.84);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(white, 0.5);
+  box-shadow: 0 24px 60px rgba($shadow-color, 0.12);
+}
+
+.auth-header {
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 0.35rem;
+  }
+
+  p {
+    color: $text-muted;
+    font-size: 0.95rem;
+  }
+}
+
+.input-field {
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: $text-muted;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+
+  input {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-family: $font-family;
+    font-size: 0.9375rem;
+    color: $text-main;
+    background-color: rgba($surface-muted, 0.7);
+    border: 1px solid $border;
+    border-radius: $border-radius-lg;
+    transition: $transition;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background-color: $surface;
+      box-shadow: 0 0 0 4px rgba($primary, 0.12);
+    }
+
+    &::placeholder {
+      color: rgba($text-muted, 0.5);
+    }
+  }
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  font-family: $font-family;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, $primary 0%, color.adjust($primary-dark, $lightness: -2%) 100%);
+  border: none;
+  border-radius: $border-radius-lg;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba($primary, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: $border;
+  }
+}
+
+.auth-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: $text-muted;
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    font-weight: 600;
+    margin-left: 0.25rem;
+  }
+}
+
+.lang-selector {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+}
+
+.auth-row {
+  display: flex;
+  gap: 1rem;
+  .input-field {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-box {
+    padding: 1.5rem;
+  }
+
+  .auth-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }

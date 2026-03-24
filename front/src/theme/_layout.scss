@@ -8,6 +8,7 @@
   width: 100vw;
   overflow: hidden;
   position: relative;
+  background: transparent;
 
   aside {
     position: relative;
@@ -20,9 +21,9 @@
     overflow: hidden;
 
     header.main-header {
-      -webkit-box-shadow: 0 1px 5px -3px rgba(173, 171, 173, 0.5);
-      -moz-box-shadow: 0 1px 5px -3px rgba(173, 171, 173, 0.5);
-      box-shadow: 0 1px 5px -3px rgba(173, 171, 173, 0.5);
+      position: sticky;
+      top: 0;
+      box-shadow: none;
       z-index: 30;
     }
 
@@ -30,6 +31,7 @@
       flex: 1;
       overflow: auto;
       z-index: 20;
+      padding: 1.25rem 1.25rem 1.5rem;
     }
 
     .side-nav {
@@ -58,5 +60,5 @@
 
 .main-container {
   padding: 24px;
-  background: var(--surface-1);
+  background: transparent;
 }

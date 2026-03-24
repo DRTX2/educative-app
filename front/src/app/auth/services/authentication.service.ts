@@ -1,14 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { tap, map, catchError } from 'rxjs/operators';
 
 import { CredentialsService } from '@app/auth';
 import { Credentials } from '@core/entities';
 
 export interface LoginContext {
-  username: string;
+  email: string;
   password: string;
   remember?: boolean;
-  isMobile?: boolean;
+}
+
+export interface RegisterContext {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
 }
 
 /**
@@ -19,7 +27,12 @@ export interface LoginContext {
   providedIn: 'root',
 })
 export class AuthenticationService {
-  constructor(private readonly _credentialsService: CredentialsService) {}
+  private readonly _apiUrl = '/api/v1/auth';
+
+  constructor(
+    private readonly _http: HttpClient,
+    private readonly _credentialsService: CredentialsService,
+  ) {}
 
   /**
    * Authenticates the user.
@@ -27,20 +40,47 @@ export class AuthenticationService {
    * @return The user credentials.
    */
   login(context: LoginContext): Observable<Credentials> {
-    const credentials: Credentials = new Credentials({
-      username: 'johndoe',
-      id: '',
-      token: '123456',
-      refreshToken: '123456',
-      expiresIn: 3600,
-      roles: ['admin'],
-      email: 'john@email.com',
-      firstName: 'John',
-      lastName: 'Doe',
-    });
-    this._credentialsService.setCredentials(credentials, context.remember);
+    return this._http
+      .post<any>(`${this._apiUrl}/email/login`, {
+        email: context.email,
+        password: context.password,
+      })
+      .pipe(
+        map((res) => {
+          const credentials = new Credentials({
+            token: res.token,
+            refreshToken: res.refreshToken,
+            expiresIn: res.tokenExpires,
+            username: res.user.email,
+            email: res.user.email,
+            id: res.user.id,
+            roles: [res.user.role?.name || 'user'],
+            firstName: res.user.firstName,
+            lastName: res.user.lastName,
+          });
+          this._credentialsService.setCredentials(credentials, context.remember);
+          return credentials;
+        }),
+      );
+  }
 
-    return of(credentials);
+  /**
+   * Registers a new user.
+   * @param context The registration parameters.
+   * @return True if successful.
+   */
+  register(context: RegisterContext): Observable<boolean> {
+    return this._http
+      .post<void>(`${this._apiUrl}/email/register`, {
+        email: context.email,
+        password: context.password,
+        firstName: context.firstName,
+        lastName: context.lastName,
+      })
+      .pipe(
+        map(() => true),
+        catchError((err) => throwError(() => err)),
+      );
   }
 
   /**
@@ -48,6 +88,13 @@ export class AuthenticationService {
    * @return True if the user was logged out successfully.
    */
   logout(): Observable<any> {
-    return of(true);
+    this._credentialsService.setCredentials();
+    return this._http.post(`${this._apiUrl}/logout`, {}).pipe(
+      map(() => true),
+      catchError(() => {
+        // Even if logout fails on server, clear local credentials
+        return [true];
+      }),
+    );
   }
 }

@@ -4,6 +4,8 @@ import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AuthenticationService } from '@app/auth';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HotToastService } from '@ngxpert/hot-toast';
+import { TranslateService } from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -14,11 +16,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class LoginComponent {
   version: string | null = environment.version;
+  email = '';
+  password = '';
 
   constructor(
     private readonly _router: Router,
     private readonly _route: ActivatedRoute,
     private readonly _authService: AuthenticationService,
+    private readonly _toast: HotToastService,
+    private readonly _translate: TranslateService,
   ) {}
 
   login() {
@@ -26,23 +32,24 @@ export class LoginComponent {
     // setting credentials and other logic will be handled in the AuthenticationService.
     this._authService
       .login({
-        username: 'johndoe',
-        password: '123456',
+        email: this.email,
+        password: this.password,
       })
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (res) => {
-          // Navigate to the home page or any other page after successful login.
           if (res) {
-            console.log('Login successful');
-            this._router.navigate([this._route.snapshot.queryParams['redirect'] || '/dashboard'], { replaceUrl: true }).then(() => {
-              // Handle the navigation
-              console.log('Navigated to dashboard');
-            });
+            this._toast.success(this._translate.instant('Login successful'));
+            this._router
+              .navigate([this._route.snapshot.queryParams['redirect'] || '/dashboard'], { replaceUrl: true })
+              .then(() => {
+                console.log('Navigated to dashboard');
+              });
           }
         },
         error: (error) => {
-          // Handle the error here
+          this._toast.error(this._translate.instant('Invalid credentials'));
+          console.error('Login error:', error);
         },
       });
   }

@@ -17,5 +17,16 @@
         "files": ["/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-lessons",
+      "urls": ["/api/v1/lessons/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxAge": "30d",
+        "maxSize": 100
+      }
+    }
   ]
 }

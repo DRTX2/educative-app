@@ -1,60 +1,36 @@
 import { PERMISSIONS } from '../../auth/enums/permissions.enum';
 import { NavMenuItem } from '@core/interfaces';
 
-// THIS FILE CONTAINS THE NAVIGATION MENU ITEMS FOR THE SIDEBAR AND ALL OTHER NAVIGATION MENUS WHICH ARE USED IN THE APPLICATION AND ARE CONSTANT
-
-/**
- * Navigation menu items for WEB Sidebar
- */
 export const webSidebarMenuItems: NavMenuItem[] = [
   {
     href: '/dashboard',
     title: 'Dashboard',
     active: true,
-    icon: 'fa-home',
+    icon: '🌾',
   },
   {
-    href: '/users',
-    title: 'Users',
+    href: '/tasks',
+    title: 'TASKS',
     active: false,
-    icon: 'fa-users',
-    permissions: [PERMISSIONS.ACCESS_USER],
+    icon: '🧭',
   },
   {
-    href: '/sales',
-    title: 'Sales',
+    href: '/lessons',
+    title: 'LESSONS',
     active: false,
-    icon: 'fa-money-bill-alt',
-    permissions: [PERMISSIONS.ACCESS_SALE],
+    icon: '📚',
   },
   {
-    href: '/products',
-    title: 'Products',
+    href: '/feedback',
+    title: 'FEEDBACK',
     active: false,
-    icon: 'fa-box',
-    subItems: [
-      {
-        href: '/product-categories',
-        title: 'Product Categories',
-        active: false,
-      },
-      {
-        href: '/product-types',
-        title: 'Product Types',
-        active: false,
-      },
-      {
-        href: '/product-attributes',
-        title: 'Product Attributes',
-        active: false,
-      },
-    ],
+    icon: '💬',
   },
   {
-    href: '/settings',
-    title: 'Settings',
+    href: '/admin',
+    title: 'ADMIN',
     active: false,
-    icon: 'fa-cog',
-    divider: true,
+    icon: '📊',
+    roles: ['admin'],
   },
 ];

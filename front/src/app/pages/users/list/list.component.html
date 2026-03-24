@@ -1,36 +1,41 @@
-<section class="main-container">
-  <h2>Users List</h2>
+<section class="users-page">
+  <div class="users-hero">
+    <div>
+      <span class="eyebrow">Gestión de estudiantes</span>
+      <h1>Consulta rápidamente quién está dentro de la plataforma.</h1>
+      <p>Una vista clara para administración básica, seguimiento operativo y revisión de cuentas.</p>
+    </div>
 
-  <div class="user-table-container">
-    <table class="user-table">
-      <thead>
-        <tr>
-          <th>Avatar</th>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        @if (!isLoading) {
-          @for (user of users; track user.id) {
-            <tr (click)="userClicked()">
-              <td>
-                <img [src]="user.picture.thumbnail" alt="{{ user.name.first }}'s avatar" />
-              </td>
-              <td>{{ user.name.title }} {{ user.name.first }} {{ user.name.last }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.phone }}</td>
-              <td>{{ user.location.city }}, {{ user.location.country }}</td>
-            </tr>
-          }
-        } @else {
-          <tr>
-            <td colspan="5" style="text-align: center">Loading...</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <input
+      type="search"
+      [(ngModel)]="search"
+      placeholder="Buscar por nombre o correo"
+    />
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando estudiantes...</p>
+  </div>
+
+  <div class="users-table" *ngIf="!isLoading">
+    <div class="table-row header">
+      <span>Estudiante</span>
+      <span>Correo</span>
+      <span>Rol</span>
+      <span>Estado</span>
+      <span>Registro</span>
+    </div>
+
+    <div class="table-row" *ngFor="let user of filteredUsers()">
+      <span class="primary-cell">
+        <strong>{{ getFullName(user) }}</strong>
+        <small>{{ user.provider }}</small>
+      </span>
+      <span>{{ user.email || 'Sin correo' }}</span>
+      <span>{{ user.role?.name || 'user' }}</span>
+      <span>{{ user.status?.name || 'Sin estado' }}</span>
+      <span>{{ formatDate(user.createdAt) }}</span>
+    </div>
   </div>
 </section>

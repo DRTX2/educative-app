@@ -41,7 +41,7 @@ export const PermissionGuard: CanActivateFn & CanActivateChildFn = (route: Activ
 
 // Utility function to handle unauthorized access
 function handleUnauthorized(router: Router): boolean {
-  router.navigate(['/unauthorized']);
+  router.navigate(['/dashboard']);
   return false;
 }
 

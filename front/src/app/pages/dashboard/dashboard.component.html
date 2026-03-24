@@ -1,3 +1,150 @@
-<section class="main-container">
-  <h2 translate>Dashboard</h2>
-</section>
+<div class="dashboard-page">
+  <div *ngIf="isLoading" class="loading-section">
+    <div class="spinner"></div>
+    <p>Preparando tu centro de aprendizaje...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <span class="hero-kicker">{{ getGreeting() }}</span>
+        <h1>Aprender con propósito, claridad y alegría también es posible sin conexión constante.</h1>
+        <p>
+          Este panel organiza tus próximos pasos para que estudiar se sienta útil, cercano y
+          alcanzable en el ritmo de tu comunidad.
+        </p>
+
+        <div class="hero-pills">
+          <span>{{ tasksCount.pending }} tareas en curso</span>
+          <span>{{ lessonsCount.completed }} lecciones completadas</span>
+          <span>{{ feedbackCount }} reflexiones registradas</span>
+        </div>
+      </div>
+
+      <div class="hero-progress">
+        <div class="progress-ring">
+          <svg viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="48" class="ring-base"></circle>
+            <circle
+              cx="60"
+              cy="60"
+              r="48"
+              class="ring-value"
+              [style.stroke-dashoffset]="302 - (302 * completionPercentage / 100)"
+            ></circle>
+          </svg>
+          <div class="progress-value">
+            <strong>{{ completionPercentage }}%</strong>
+            <span>avance global</span>
+          </div>
+        </div>
+        <p>{{ getProgressNarrative() }}</p>
+      </div>
+    </section>
+
+    <section class="actions-section">
+      <div class="section-heading">
+        <h2>Hoy puedes avanzar así</h2>
+        <p>Pequeñas acciones bien elegidas hacen sostenible el aprendizaje.</p>
+      </div>
+
+      <div class="actions-grid">
+        <a
+          class="action-card"
+          [class.action-warm]="action.accent === 'warm'"
+          [class.action-soft]="action.accent === 'soft'"
+          *ngFor="let action of quickActions"
+          [routerLink]="action.route"
+        >
+          <h3>{{ action.label }}</h3>
+          <p>{{ action.description }}</p>
+          <span>Ir ahora</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="metrics-section">
+      <article class="metric-card" *ngFor="let metric of metrics">
+        <span class="metric-label">{{ metric.label }}</span>
+        <strong>{{ metric.value }}</strong>
+        <p>{{ metric.description }}</p>
+      </article>
+    </section>
+
+    <section class="insight-grid">
+      <article class="focus-card">
+        <div class="section-heading">
+          <h2>Tu siguiente foco</h2>
+          <p>Una visión simple para orientar el siguiente paso.</p>
+        </div>
+
+        <div class="focus-list">
+          <div class="focus-item">
+            <span class="focus-icon">🧭</span>
+            <div>
+              <h3>Planificación diaria</h3>
+              <p>
+                {{ tasksCount.pending > 0
+                  ? 'Hay tareas activas. Prioriza una que puedas cerrar hoy.'
+                  : 'No tienes pendientes. Este es un buen momento para abrir una nueva misión.' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="focus-item">
+            <span class="focus-icon">🌦️</span>
+            <div>
+              <h3>Aprendizaje constante</h3>
+              <p>
+                {{ lessonsCount.completed > 0
+                  ? 'Ya construiste evidencia de avance. Mantén el hábito con una lección corta.'
+                  : 'Todavía no registras lecciones completadas. Una primera ruta puede marcar el tono del proyecto.' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="focus-item">
+            <span class="focus-icon">🗣️</span>
+            <div>
+              <h3>Escucha de la experiencia</h3>
+              <p>
+                {{ feedbackCount > 0
+                  ? 'Tus comentarios ya están ayudando a mejorar la plataforma.'
+                  : 'Registrar tu experiencia también forma parte de una solución seria y útil.' }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="tasks-card">
+        <div class="section-heading compact">
+          <h2>Próximas tareas</h2>
+          <a routerLink="/tasks">Ver tablero completo</a>
+        </div>
+
+        <div class="task-list" *ngIf="pendingTasks.length > 0; else noTasks">
+          <div class="task-row" *ngFor="let task of pendingTasks; trackBy: trackByTask">
+            <div class="task-main">
+              <span class="priority-dot" [class]="getPriorityTone(task.priority)"></span>
+              <div>
+                <h3>{{ task.title }}</h3>
+                <p>{{ getDueLabel(task) }}</p>
+              </div>
+            </div>
+            <span class="priority-chip" [class]="getPriorityTone(task.priority)">
+              {{ task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Media' : 'Baja' }}
+            </span>
+          </div>
+        </div>
+
+        <ng-template #noTasks>
+          <div class="empty-panel">
+            <strong>Todo al día.</strong>
+            <p>Tu tablero está limpio. Puedes sumar una nueva misión o empezar una lección.</p>
+          </div>
+        </ng-template>
+      </article>
+    </section>
+  </ng-container>
+</div>

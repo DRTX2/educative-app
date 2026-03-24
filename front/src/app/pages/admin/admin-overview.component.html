@@ -1,0 +1,279 @@
+<div class="admin-page">
+  <section class="admin-hero">
+    <div>
+      <span class="eyebrow">Docentes y operación</span>
+      <h1>Panel administrativo para seguir aprendizaje, actividad y escucha estudiantil.</h1>
+      <p>
+        Esta vista resume qué está pasando en la plataforma y ayuda a tomar decisiones pedagógicas
+        con datos simples y útiles.
+      </p>
+    </div>
+  </section>
+
+  <section class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando analítica...</p>
+  </section>
+
+  <ng-container *ngIf="!isLoading && overview">
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span>Estudiantes registrados</span>
+        <strong>{{ overview.totalLearners }}</strong>
+      </article>
+      <article class="stat-card warm">
+        <span>Estudiantes activos</span>
+        <strong>{{ overview.activeLearners }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Tareas completadas</span>
+        <strong>{{ getTaskCompletionRate() }}%</strong>
+      </article>
+      <article class="stat-card warm">
+        <span>Promedio de lecciones</span>
+        <strong>{{ overview.averageLessonScore }}/100</strong>
+      </article>
+    </section>
+
+    <section class="insight-grid">
+      <article class="insight-card">
+        <h2>Actividad operativa</h2>
+        <div class="rows">
+          <div class="row">
+            <span>Tareas totales</span>
+            <strong>{{ overview.totalTasks }}</strong>
+          </div>
+          <div class="row">
+            <span>Tareas completadas</span>
+            <strong>{{ overview.completedTasks }}</strong>
+          </div>
+          <div class="row">
+            <span>Intentos de lección</span>
+            <strong>{{ overview.totalLessonAttempts }}</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="insight-card">
+        <h2>Señales recientes</h2>
+        <div class="feedback-list" *ngIf="overview.recentFeedback.length > 0; else noFeedback">
+          <div class="feedback-item" *ngFor="let item of overview.recentFeedback">
+            <div class="feedback-top">
+              <strong>{{ item.learner }}</strong>
+              <span>{{ item.rating }}/5</span>
+            </div>
+            <p>{{ item.comments || 'Sin comentario adicional.' }}</p>
+            <small>{{ item.feedbackType }} · {{ formatDate(item.createdAt) }}</small>
+          </div>
+        </div>
+        <ng-template #noFeedback>
+          <p class="empty-copy">Todavía no hay feedback reciente para mostrar.</p>
+        </ng-template>
+      </article>
+    </section>
+
+    <section class="cohort-grid">
+      <article class="cohort-card danger">
+        <span>Atención prioritaria</span>
+        <strong>{{ getCohortSnapshot().high }}</strong>
+        <p>Estudiantes con señales de bajo avance o acumulación de pendientes.</p>
+      </article>
+      <article class="cohort-card warning">
+        <span>Seguimiento</span>
+        <strong>{{ getCohortSnapshot().medium }}</strong>
+        <p>Necesitan monitoreo cercano para no caer en rezago.</p>
+      </article>
+      <article class="cohort-card safe">
+        <span>Estables</span>
+        <strong>{{ getCohortSnapshot().low }}</strong>
+        <p>Muestran continuidad y mejor respuesta a la experiencia formativa.</p>
+      </article>
+    </section>
+
+    <section class="insight-card">
+      <div class="section-head">
+        <div>
+          <h2>Gestión de estudiantes</h2>
+          <p>Busca, filtra y detecta rápido a quién acompañar primero.</p>
+        </div>
+        <div class="toolbar">
+          <input
+            type="search"
+            [(ngModel)]="learnerSearch"
+            placeholder="Buscar por nombre o correo"
+          />
+          <select [(ngModel)]="riskFilter">
+            <option value="all">Todos los niveles</option>
+            <option value="high">Atención prioritaria</option>
+            <option value="medium">Seguimiento</option>
+            <option value="low">Estables</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="learner-table">
+        <div class="learner-row header">
+          <span>Estudiante</span>
+          <span>Riesgo</span>
+          <span>Tareas</span>
+          <span>Lecciones</span>
+          <span>Puntaje</span>
+          <span>Última actividad</span>
+        </div>
+
+        <div class="learner-row" *ngFor="let learner of filteredLearners()">
+          <span class="name-cell">
+            <strong>{{ learner.fullName }}</strong>
+            <small>{{ learner.email || 'Sin correo' }}</small>
+          </span>
+          <span class="risk-chip" [class]="'risk-' + learner.riskLevel">
+            {{ getRiskLabel(learner.riskLevel) }}
+          </span>
+          <span>{{ learner.tasksCompleted }} / {{ learner.tasksCompleted + learner.tasksPending }}</span>
+          <span>{{ learner.lessonsCompleted }}</span>
+          <span>{{ learner.averageScore }}/100</span>
+          <span>{{ learner.lastActivityAt ? formatDate(learner.lastActivityAt) : 'Sin actividad' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="insight-card">
+      <div class="section-head">
+        <div>
+          <h2>Monitoreo de contenidos</h2>
+          <p>Una lectura rápida para ver qué lecciones están funcionando y cuáles requieren refuerzo.</p>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <article class="content-card" *ngFor="let lesson of contentSummary">
+          <div class="content-top">
+            <span class="category">{{ lesson.category }}</span>
+            <span class="difficulty">{{ lesson.difficulty }}</span>
+          </div>
+          <h3>{{ lesson.title }}</h3>
+          <div class="content-metrics">
+            <span>{{ lesson.totalAttempts }} intentos</span>
+            <span>{{ lesson.completions }} completadas</span>
+            <span>{{ lesson.averageScore }}/100 promedio</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="insight-card">
+      <div class="section-head">
+        <div>
+          <h2>Gestión de contenido</h2>
+          <p>Crea borradores, actualiza lecciones y controla qué contenido está publicado.</p>
+        </div>
+        <button class="primary-action" type="button" (click)="startCreateLesson()">
+          Nueva lección
+        </button>
+      </div>
+
+      <div class="content-management-grid">
+        <div class="managed-list">
+          <article class="managed-card" *ngFor="let lesson of managedLessons; trackBy: trackLesson">
+            <div class="managed-top">
+              <div>
+                <h3>{{ lesson.title }}</h3>
+                <p>{{ lesson.category }} · {{ lesson.difficulty }} · {{ lesson.estimatedMinutes }} min</p>
+              </div>
+              <span class="publish-chip" [class.unpublished]="!lesson.published">
+                {{ lesson.published ? 'Publicado' : 'Borrador' }}
+              </span>
+            </div>
+            <p class="managed-description">{{ lesson.description }}</p>
+            <button class="ghost-button" type="button" (click)="editLesson(lesson)">Editar</button>
+          </article>
+        </div>
+
+        <form class="lesson-form" (ngSubmit)="saveLesson()">
+          <div class="form-grid">
+            <label>
+              <span>Título</span>
+              <input [(ngModel)]="lessonForm.title" name="title" required />
+            </label>
+            <label>
+              <span>Categoría</span>
+              <select [(ngModel)]="lessonForm.category" name="category">
+                <option value="matematicas">Matemáticas</option>
+                <option value="ciencias">Ciencias</option>
+                <option value="lengua">Lengua</option>
+              </select>
+            </label>
+            <label>
+              <span>Dificultad</span>
+              <select [(ngModel)]="lessonForm.difficulty" name="difficulty">
+                <option value="basica">Básica</option>
+                <option value="media">Media</option>
+                <option value="avanzada">Avanzada</option>
+              </select>
+            </label>
+            <label>
+              <span>Duración estimada</span>
+              <input type="number" [(ngModel)]="lessonForm.estimatedMinutes" name="estimatedMinutes" min="1" />
+            </label>
+          </div>
+
+          <label>
+            <span>Descripción</span>
+            <textarea [(ngModel)]="lessonForm.description" name="description" rows="3" required></textarea>
+          </label>
+
+          <label>
+            <span>Introducción</span>
+            <textarea [(ngModel)]="lessonForm.content!.introduction" name="introduction" rows="3"></textarea>
+          </label>
+
+          <div class="publish-toggle">
+            <input type="checkbox" [(ngModel)]="lessonForm.published" name="published" id="publishedLesson" />
+            <label for="publishedLesson">Publicar esta lección</label>
+          </div>
+
+          <div class="questions-head">
+            <h3>Preguntas</h3>
+            <button class="ghost-button" type="button" (click)="addQuestion()">Agregar pregunta</button>
+          </div>
+
+          <div class="question-editor" *ngFor="let question of lessonForm.content?.questions; let i = index; trackBy: trackQuestion">
+            <label>
+              <span>Pregunta {{ i + 1 }}</span>
+              <textarea [(ngModel)]="question.question" name="question-{{ i }}" rows="2"></textarea>
+            </label>
+
+            <label>
+              <span>Pista</span>
+              <input [(ngModel)]="question.hint" name="hint-{{ i }}" />
+            </label>
+
+            <div class="options-editor">
+              <div class="option-row" *ngFor="let option of question.options; let j = index">
+                <span>{{ option.id }}</span>
+                <input [(ngModel)]="option.text" name="option-{{ i }}-{{ j }}" />
+              </div>
+              <button class="ghost-button" type="button" (click)="addOption(i)">Agregar opción</button>
+            </div>
+
+            <label>
+              <span>Respuesta correcta</span>
+              <select [(ngModel)]="question.correctAnswer" name="correct-{{ i }}">
+                <option *ngFor="let option of question.options" [value]="option.id">{{ option.id }}</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Explicación</span>
+              <textarea [(ngModel)]="question.explanation" name="explanation-{{ i }}" rows="2"></textarea>
+            </label>
+          </div>
+
+          <button class="primary-action" type="submit" [disabled]="isSavingLesson">
+            {{ isSavingLesson ? 'Guardando...' : editingLessonId ? 'Actualizar lección' : 'Crear lección' }}
+          </button>
+        </form>
+      </div>
+    </section>
+  </ng-container>
+</div>
