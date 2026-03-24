@@ -194,6 +194,9 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
+    const isDevelopment =
+      this.configService.get('app.nodeEnv', { infer: true }) === 'development';
+
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
@@ -219,12 +222,18 @@ export class AuthService {
       },
     );
 
-    await this.mailService.userSignUp({
-      to: dto.email,
-      data: {
-        hash,
-      },
-    });
+    try {
+      await this.mailService.userSignUp({
+        to: dto.email,
+        data: {
+          hash,
+        },
+      });
+    } catch (error) {
+      if (!isDevelopment) {
+        throw error;
+      }
+    }
   }
 
   async confirmEmail(hash: string): Promise<void> {

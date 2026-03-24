@@ -65,7 +65,7 @@ export class UserSeedService {
           password,
           role: {
             id: RoleEnum.user,
-            name: 'Admin',
+            name: 'User',
           },
           status: {
             id: StatusEnum.active,

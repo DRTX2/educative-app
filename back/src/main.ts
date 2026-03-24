@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import {
   ClassSerializerInterceptor,
+  Logger,
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
@@ -12,8 +13,36 @@ import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import { SeedModule } from './database/seeds/relational/seed.module';
+import { RoleSeedService } from './database/seeds/relational/role/role-seed.service';
+import { StatusSeedService } from './database/seeds/relational/status/status-seed.service';
+import { UserSeedService } from './database/seeds/relational/user/user-seed.service';
+import { LessonSeedService } from './database/seeds/relational/lesson/lesson-seed.service';
+
+async function seedDevelopmentDataIfNeeded(): Promise<void> {
+  if (process.env.NODE_ENV !== 'development' || process.env.DATABASE_SYNCHRONIZE !== 'true') {
+    return;
+  }
+
+  const logger = new Logger('BootstrapSeed');
+  const seedApp = await NestFactory.createApplicationContext(SeedModule, {
+    logger: ['error', 'warn'],
+  });
+
+  try {
+    await seedApp.get(RoleSeedService).run();
+    await seedApp.get(StatusSeedService).run();
+    await seedApp.get(UserSeedService).run();
+    await seedApp.get(LessonSeedService).run();
+    logger.log('Datos base verificados para desarrollo.');
+  } finally {
+    await seedApp.close();
+  }
+}
 
 async function bootstrap() {
+  await seedDevelopmentDataIfNeeded();
+
   const app = await NestFactory.create(AppModule, { cors: true });
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<AllConfigType>);
