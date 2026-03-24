@@ -1,0 +1,194 @@
+<div class="tasks-page">
+  <section class="tasks-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Organización con sentido</span>
+      <h1>Convierte tus pendientes en misiones claras y alcanzables.</h1>
+      <p>
+        Este espacio te ayuda a planear, priorizar y sostener hábitos de estudio sin saturarte.
+        Menos ruido, más enfoque.
+      </p>
+    </div>
+
+    <div class="hero-metrics">
+      <div class="metric-pill">
+        <strong>{{ getTaskCount('pending') }}</strong>
+        <span>Pendientes</span>
+      </div>
+      <div class="metric-pill">
+        <strong>{{ getDueSoonCount() }}</strong>
+        <span>Vencen pronto</span>
+      </div>
+      <div class="metric-pill">
+        <strong>{{ getCompletionRate() }}%</strong>
+        <span>Completadas</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <span class="label">Enfoque del día</span>
+      <h2>{{ getProgressMessage() }}</h2>
+      <p>Usa tareas pequeñas para mantener constancia incluso en días con poco tiempo.</p>
+    </article>
+
+    <article class="summary-card warm">
+      <span class="label">Alertas importantes</span>
+      <h2>{{ getHighPriorityPending() }} prioridades altas activas</h2>
+      <p>Si una misión es urgente, hazla visible y concreta para que no se pierda entre el resto.</p>
+    </article>
+  </section>
+
+  <section class="templates-panel">
+    <div class="section-heading">
+      <h2>Ideas rápidas para empezar</h2>
+      <p>Plantillas pensadas para estudiantes que necesitan claridad desde el primer clic.</p>
+    </div>
+
+    <div class="template-grid">
+      <button
+        class="template-card"
+        type="button"
+        *ngFor="let template of templates"
+        (click)="openCreateModal(template)"
+      >
+        <span class="template-chip" [class]="getPriorityTone(template.priority)">
+          {{ getPriorityLabel(template.priority) }}
+        </span>
+        <h3>{{ template.title }}</h3>
+        <p>{{ template.description }}</p>
+        <span class="template-action">Usar plantilla</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="toolbar">
+    <div class="filter-tabs">
+      <button
+        *ngFor="let tab of filterTabs"
+        [class.active]="filter === tab.value"
+        class="filter-tab"
+        type="button"
+        (click)="filter = tab.value"
+      >
+        <span>{{ tab.label }}</span>
+        <strong>{{ getTaskCount(tab.value) }}</strong>
+      </button>
+    </div>
+
+    <button class="create-button" type="button" (click)="openCreateModal()">
+      Nueva tarea
+    </button>
+  </section>
+
+  <section class="empty-state" *ngIf="filteredTasks().length === 0">
+    <div class="empty-icon">🧺</div>
+    <h2>{{ filter === 'completed' ? 'Aún no has completado tareas' : 'No hay tareas en este filtro' }}</h2>
+    <p>
+      {{ filter === 'pending'
+        ? 'Tu panel está despejado. Puedes abrir una nueva misión para seguir avanzando.'
+        : 'Crear tareas cortas y específicas ayuda a sostener el aprendizaje.' }}
+    </p>
+    <button class="create-button" type="button" (click)="openCreateModal()">
+      Crear tarea
+    </button>
+  </section>
+
+  <section class="tasks-grid" *ngIf="filteredTasks().length > 0">
+    <article
+      class="task-card"
+      *ngFor="let task of filteredTasks(); trackBy: trackByTaskId"
+      [class.completed]="task.completed"
+    >
+      <div class="task-top">
+        <div class="task-title-wrap">
+          <span class="priority-dot" [class]="getPriorityTone(task.priority)"></span>
+          <div>
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description || 'Sin descripción adicional.' }}</p>
+          </div>
+        </div>
+
+        <span class="priority-chip" [class]="getPriorityTone(task.priority)">
+          {{ getPriorityLabel(task.priority) }}
+        </span>
+      </div>
+
+      <div class="task-meta">
+        <span>{{ formatDate(task.dueDate) }}</span>
+        <span>{{ task.completed ? 'Completada' : 'En progreso' }}</span>
+      </div>
+
+      <div class="task-actions">
+        <label class="toggle">
+          <input type="checkbox" [checked]="task.completed" (change)="toggleComplete(task)" />
+          <span>{{ task.completed ? 'Marcar pendiente' : 'Marcar completada' }}</span>
+        </label>
+
+        <button class="delete-button" type="button" (click)="deleteTask(task)">
+          Eliminar
+        </button>
+      </div>
+    </article>
+  </section>
+
+  <div class="modal-overlay" [class.active]="showModal" (click)="closeModal($event)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <span class="modal-eyebrow">Nueva misión</span>
+          <h2>Agrega una tarea útil y concreta</h2>
+        </div>
+        <button class="close-button" type="button" (click)="closeModal()">×</button>
+      </div>
+
+      <form class="modal-body" (ngSubmit)="createTask()">
+        <div class="form-group">
+          <label for="taskTitle">Título</label>
+          <input
+            id="taskTitle"
+            type="text"
+            [(ngModel)]="newTask.title"
+            name="title"
+            placeholder="Ej. Practicar regla de tres durante 20 minutos"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="taskDescription">Descripción</label>
+          <textarea
+            id="taskDescription"
+            [(ngModel)]="newTask.description"
+            name="description"
+            rows="4"
+            placeholder="Escribe el objetivo o el contexto de la tarea"
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskPriority">Prioridad</label>
+            <select id="taskPriority" [(ngModel)]="newTask.priority" name="priority">
+              <option value="low">Baja</option>
+              <option value="medium">Media</option>
+              <option value="high">Alta</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="taskDueDate">Fecha límite</label>
+            <input id="taskDueDate" type="date" [(ngModel)]="newTask.dueDate" name="dueDate" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="ghost-button" type="button" (click)="closeModal()">Cancelar</button>
+          <button class="create-button" type="submit" [disabled]="!newTask.title || isCreating">
+            {{ isCreating ? 'Guardando...' : 'Crear tarea' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="feedback-page">
+  <section class="feedback-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Escucha activa</span>
+      <h1>Tu voz ayuda a mejorar cada experiencia de aprendizaje.</h1>
+      <p>
+        En una plataforma seria, escuchar al estudiante no es extra: es parte del diseño.
+        Comparte qué funcionó, qué costó y qué debería mejorar.
+      </p>
+    </div>
+
+    <button class="hero-button" type="button" (click)="openFeedback()">
+      Compartir experiencia
+    </button>
+  </section>
+
+  <section class="feedback-grid" *ngIf="!isLoading">
+    <article class="metric-card">
+      <span class="metric-label">Reflexiones guardadas</span>
+      <strong>{{ feedbackEntries.length }}</strong>
+      <p>Comentarios que ayudan a ajustar contenido, ritmo y acompañamiento.</p>
+    </article>
+
+    <article class="metric-card warm">
+      <span class="metric-label">Valoración media</span>
+      <strong>{{ averageRating || 0 }}/5</strong>
+      <p>Indicador rápido del nivel de claridad y disfrute percibido.</p>
+    </article>
+
+    <article class="metric-card">
+      <span class="metric-label">Origen del feedback</span>
+      <strong>{{ countByType('lesson') }} lecciones</strong>
+      <p>{{ countByType('task') }} tareas y {{ countByType('general') }} comentarios generales.</p>
+    </article>
+  </section>
+
+  <section class="empty-block" *ngIf="!isLoading && feedbackEntries.length === 0">
+    <div class="empty-illustration">💬</div>
+    <h2>Aún no hay reflexiones registradas</h2>
+    <p>
+      Puedes iniciar con una observación simple: qué te gustó, qué fue difícil o qué tema te
+      gustaría practicar más.
+    </p>
+    <button class="secondary-button" type="button" (click)="openFeedback()">
+      Dejar mi primera opinión
+    </button>
+  </section>
+
+  <section class="timeline" *ngIf="!isLoading && feedbackEntries.length > 0">
+    <div class="section-heading">
+      <h2>Historial de reflexiones</h2>
+      <p>Un registro simple, útil y visible para construir mejora continua.</p>
+    </div>
+
+    <article class="timeline-card" *ngFor="let entry of feedbackEntries; trackBy: trackById">
+      <div class="timeline-top">
+        <div>
+          <span class="entry-kind">{{ entry.feedbackType | titlecase }}</span>
+          <h3>{{ getTone(entry.rating) }}</h3>
+        </div>
+        <div class="entry-rating">{{ entry.rating }}/5</div>
+      </div>
+
+      <p class="entry-comment" *ngIf="entry.comments; else noComment">{{ entry.comments }}</p>
+      <ng-template #noComment>
+        <p class="entry-comment muted">Se registró la valoración sin comentario adicional.</p>
+      </ng-template>
+
+      <div class="timeline-bottom">
+        <span>{{ formatDate(entry.createdAt) }}</span>
+        <span [class.synced]="entry.synced">{{ entry.synced ? 'Sincronizado' : 'Pendiente de sincronizar' }}</span>
+      </div>
+    </article>
+  </section>
+
+  <app-feedback-modal [show]="showModal" (closed)="handleModalClosed()"></app-feedback-modal>
+</div>

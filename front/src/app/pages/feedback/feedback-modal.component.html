@@ -1,0 +1,54 @@
+<div class="feedback-overlay" [class.active]="show" (click)="close()">
+  <div class="feedback-modal" (click)="$event.stopPropagation()">
+    <div class="feedback-header">
+      <div>
+        <span class="feedback-eyebrow">Mejora continua</span>
+        <h2>¿Cómo fue tu experiencia?</h2>
+      </div>
+      <button class="btn-close" (click)="close()" type="button">×</button>
+    </div>
+
+    <div class="feedback-body">
+      <div class="rating-section">
+        <label class="rating-label">Elige cómo se sintió esta actividad para ti</label>
+
+        <div class="rating-options">
+          <button
+            *ngFor="let i of [1, 2, 3, 4, 5]"
+            type="button"
+            class="rating-btn"
+            [class.selected]="rating === i"
+            (click)="rating = i"
+            [title]="getRatingLabel(i)">
+            <span class="rating-emoji">{{ getEmoji(i) }}</span>
+            <span class="rating-text" *ngIf="rating === i">{{ getRatingLabel(i) }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="comment-section">
+        <label for="feedbackComment" class="comment-label">Comentario opcional</label>
+        <textarea
+          id="feedbackComment"
+          [(ngModel)]="comment"
+          placeholder="Cuéntanos qué fue claro, qué fue difícil o qué podríamos mejorar"
+          class="feedback-textarea"
+          rows="3"
+          maxlength="200"></textarea>
+        <small class="char-count">{{ comment.length }}/200 caracteres</small>
+      </div>
+    </div>
+
+    <div class="feedback-actions">
+      <button type="button" class="btn-secondary" (click)="close()">Ahora no</button>
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="submit()"
+        [disabled]="rating === 0 || isSubmitting">
+        <span *ngIf="!isSubmitting">Guardar opinión</span>
+        <span *ngIf="isSubmitting">Guardando...</span>
+      </button>
+    </div>
+  </div>
+</div>

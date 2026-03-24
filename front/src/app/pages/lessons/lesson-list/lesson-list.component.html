@@ -1,0 +1,99 @@
+<div class="lessons-page">
+  <section class="lessons-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Aprendizaje con contexto</span>
+      <h1>Rutas cortas, útiles y conectadas con la realidad de la vida rural.</h1>
+      <p>
+        Cada lección está pensada para ser clara, breve y aplicable. Puedes retomarla cuando
+        quieras y revisar tu mejor resultado.
+      </p>
+    </div>
+
+    <div class="hero-metrics">
+      <div class="metric-card">
+        <strong>{{ lessons.length }}</strong>
+        <span>Lecciones disponibles</span>
+      </div>
+      <div class="metric-card warm">
+        <strong>{{ getCompletedLessonsCount() }}</strong>
+        <span>Rutas completadas</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="filters-panel">
+    <div class="section-heading">
+      <h2>Explora por área</h2>
+      <p>Filtros sencillos para que encontrar contenido no sea una barrera.</p>
+    </div>
+
+    <div class="category-filter">
+      <button
+        *ngFor="let category of categories"
+        type="button"
+        class="category-btn"
+        [class.active]="selectedCategory === category.value"
+        (click)="filterByCategory(category.value)"
+      >
+        {{ category.label }}
+      </button>
+    </div>
+  </section>
+
+  <section class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando rutas de aprendizaje...</p>
+  </section>
+
+  <section class="empty-state" *ngIf="!isLoading && filteredLessons.length === 0">
+    <div class="empty-icon">🌾</div>
+    <h2>No encontramos lecciones para este filtro</h2>
+    <p>Prueba otra categoría o sincroniza contenido cuando tengas conexión.</p>
+  </section>
+
+  <section class="lessons-grid" *ngIf="!isLoading && filteredLessons.length > 0">
+    <a
+      class="lesson-card"
+      *ngFor="let lesson of filteredLessons; trackBy: trackByLesson"
+      [routerLink]="['/lessons', lesson.id]"
+    >
+      <div class="lesson-top">
+        <span class="category-chip">{{ getCategoryLabel(lesson.category) }}</span>
+        <span class="difficulty-chip">{{ getDifficultyLabel(lesson.difficulty) }}</span>
+      </div>
+
+      <div class="lesson-body">
+        <h3>{{ lesson.title }}</h3>
+        <p>{{ lesson.description }}</p>
+      </div>
+
+      <div class="lesson-meta">
+        <span>{{ getQuestionCount(lesson) }} preguntas</span>
+        <span>{{ getEstimatedMinutes(lesson) }} min aprox.</span>
+        <span>Disponible offline</span>
+      </div>
+
+      <div class="lesson-progress" *ngIf="getLessonProgress(lesson.id) as progress; else newLesson">
+        <div class="progress-badge">
+          <strong>{{ progress.score }}/100</strong>
+          <span>mejor puntaje</span>
+        </div>
+        <p>Ya la trabajaste. Puedes volver a practicar para reforzar el tema.</p>
+      </div>
+
+      <ng-template #newLesson>
+        <div class="lesson-progress new">
+          <div class="progress-badge">
+            <strong>Nueva</strong>
+            <span>lista para empezar</span>
+          </div>
+          <p>Una ruta breve y contextualizada para construir confianza desde el inicio.</p>
+        </div>
+      </ng-template>
+
+      <div class="lesson-action">
+        <span>{{ getLessonProgress(lesson.id) ? 'Volver a practicar' : 'Comenzar ahora' }}</span>
+      </div>
+    </a>
+  </section>
+</div>

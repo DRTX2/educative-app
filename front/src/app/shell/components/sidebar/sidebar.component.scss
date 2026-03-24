@@ -1,0 +1,227 @@
+@use "sass:color";
+@use "../../../../theme/variables" as *;
+
+nav {
+  height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba($highlight, 0.28), transparent 26%),
+    linear-gradient(180deg, rgba($surface, 0.96) 0%, rgba(#f5efdf, 0.98) 100%);
+  border: 1px solid rgba(white, 0.38);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: hidden;
+  z-index: 100;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba($shadow-color, 0.12);
+  padding: 1rem 0.8rem;
+
+  &.pb { width: 290px; }
+  &.squeeze { width: 94px; }
+}
+
+.toggle-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  height: 42px;
+  margin-left: auto;
+  margin-right: 0.35rem;
+  cursor: pointer;
+  color: $text-muted;
+  background: rgba($surface, 0.7);
+  border: 1px solid rgba($border, 0.8);
+  border-radius: 14px;
+
+  &:hover {
+    color: $primary;
+    background: white;
+  }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1rem 0.75rem;
+  margin-bottom: 0.9rem;
+  cursor: pointer;
+
+  .logo-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    font-size: 1.7rem;
+    background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+    box-shadow: 0 12px 20px rgba($primary, 0.2);
+  }
+
+  .logo-copy {
+    min-width: 0;
+
+    p {
+      margin: 0 0 0.2rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: $text-muted;
+    }
+
+    h4 {
+      white-space: nowrap;
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin: 0;
+      color: $text-main;
+    }
+  }
+}
+
+.sidebar-story,
+.sidebar-footer {
+  margin: 0 0.7rem 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(white, 0.55);
+  border: 1px solid rgba($border, 0.75);
+
+  p,
+  h5 {
+    margin: 0;
+  }
+}
+
+.sidebar-story {
+  .story-tag {
+    margin-bottom: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $primary;
+  }
+
+  h5 {
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: $text-main;
+  }
+}
+
+.navbar-menu-items {
+  flex: 1;
+  padding: 0 0.35rem;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 0.95rem;
+  margin-bottom: 0.35rem;
+  border-radius: 18px;
+  color: $text-muted;
+  transition: $transition;
+  cursor: pointer;
+  border: 1px solid transparent;
+
+  &:hover {
+    background: rgba(white, 0.65);
+    border-color: rgba($border, 0.8);
+    color: $primary;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, rgba($primary, 0.14) 0%, rgba($secondary, 0.12) 100%);
+    color: $text-main;
+    font-weight: 600;
+
+    .menu-icon {
+      background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+      color: white;
+      transform: scale(1.02);
+    }
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 0.85rem;
+  }
+
+  .menu-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba($primary, 0.08);
+    font-size: 1.15rem;
+    transition: $transition;
+  }
+}
+
+.divider {
+  display: block;
+  height: 1px;
+  background: $border;
+  margin: 1.5rem 1rem;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+
+  .footer-badge {
+    display: inline-flex;
+    margin-bottom: 0.5rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: rgba($accent, 0.14);
+    color: color.adjust($accent, $lightness: -12%);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: $text-muted;
+    line-height: 1.45;
+  }
+}
+
+// Mobile support: when squeezed, hide text
+nav.squeeze {
+  .logo-container h4,
+  .logo-container p,
+  .menu-title,
+  .submenu-icon,
+  .sidebar-story,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .logo-container {
+    padding: 1rem 0;
+    justify-content: center;
+
+    .logo-icon {
+      margin: 0;
+    }
+  }
+
+  .menu-item {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 1024px) {
+  nav {
+    border-radius: 24px;
+  }
+}

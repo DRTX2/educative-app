@@ -1,0 +1,396 @@
+@use "sass:color";
+@use "../../../../theme/variables" as *;
+
+.lesson-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lesson-header,
+.intro-card,
+.progress-panel,
+.question-card,
+.navigation-controls,
+.results-screen,
+.review-card,
+.loading-screen {
+  border-radius: 28px;
+  border: 1px solid rgba(white, 0.5);
+  box-shadow: 0 24px 48px rgba($shadow-color, 0.08);
+}
+
+.loading-screen {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: rgba($surface, 0.88);
+
+  p {
+    margin: 0;
+    color: $text-muted;
+  }
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 4px solid rgba($primary, 0.14);
+  border-top-color: $primary;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lesson-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  padding: 1.5rem;
+  background:
+    radial-gradient(circle at top right, rgba($highlight, 0.62), transparent 28%),
+    linear-gradient(135deg, rgba($primary, 0.98) 0%, rgba($primary-dark, 0.98) 100%);
+  color: white;
+
+  h1 {
+    margin-bottom: 0.35rem;
+    color: white;
+    font-size: clamp(1.7rem, 3vw, 2.5rem);
+  }
+
+  p {
+    margin: 0;
+    color: rgba(white, 0.84);
+  }
+}
+
+.back-button,
+.primary-button,
+.ghost-button,
+.ghost-link,
+.hint-button,
+.option-card {
+  transition: $transition;
+}
+
+.back-button,
+.ghost-button,
+.ghost-link,
+.hint-button {
+  border: none;
+  border-radius: 18px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.back-button {
+  align-self: start;
+  background: rgba(white, 0.14);
+  color: white;
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 0.55rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(white, 0.14);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header-badge {
+  align-self: center;
+  padding: 1rem;
+  border-radius: 22px;
+  background: rgba(white, 0.14);
+  text-align: center;
+
+  strong {
+    display: block;
+    font-size: 1.4rem;
+  }
+
+  span {
+    color: rgba(white, 0.8);
+  }
+}
+
+.intro-card,
+.progress-panel,
+.question-card,
+.navigation-controls,
+.results-screen {
+  padding: 1.35rem;
+  background: rgba($surface, 0.9);
+}
+
+.intro-card p,
+.keyboard-tip {
+  margin: 0;
+  color: $text-muted;
+}
+
+.progress-meta,
+.results-summary,
+.results-actions,
+.review-top,
+.navigation-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.progress-meta {
+  margin-bottom: 0.8rem;
+  color: $text-muted;
+  font-weight: 700;
+}
+
+.progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba($border, 0.8);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, $primary 0%, $secondary 100%);
+}
+
+.question-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.question-step {
+  display: inline-flex;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba($primary, 0.12);
+  color: $primary;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+.hint-button {
+  background: rgba($secondary, 0.18);
+  color: color.adjust($secondary, $lightness: -20%);
+}
+
+.hint-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #fff8ed 0%, #ffe7ba 100%);
+  color: $text-main;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1.2rem;
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  border: 1px solid rgba($border, 0.8);
+  border-radius: 22px;
+  padding: 1rem;
+  background: white;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover,
+  &.selected {
+    border-color: rgba($primary, 0.6);
+    background: rgba($primary, 0.05);
+  }
+}
+
+.option-code {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba($primary, 0.12);
+  color: $primary;
+  font-weight: 800;
+}
+
+.primary-button {
+  border: none;
+  border-radius: 18px;
+  padding: 0.95rem 1.25rem;
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.ghost-button,
+.ghost-link {
+  background: rgba($border, 0.7);
+  color: $text-main;
+  text-decoration: none;
+}
+
+.keyboard-tip {
+  text-align: center;
+}
+
+.results-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
+  &.score-excellent {
+    background: linear-gradient(180deg, #f4fbf1 0%, rgba($surface, 0.92) 100%);
+  }
+
+  &.score-good {
+    background: linear-gradient(180deg, #f7fbf2 0%, rgba($surface, 0.92) 100%);
+  }
+
+  &.score-ok {
+    background: linear-gradient(180deg, #fff8ee 0%, rgba($surface, 0.92) 100%);
+  }
+
+  &.score-low {
+    background: linear-gradient(180deg, #fff5f2 0%, rgba($surface, 0.92) 100%);
+  }
+}
+
+.score-chip {
+  min-width: 160px;
+  padding: 1rem;
+  border-radius: 24px;
+  background: white;
+  text-align: center;
+
+  strong {
+    display: block;
+    font-size: 2rem;
+  }
+
+  span {
+    color: $text-muted;
+  }
+}
+
+.results-copy {
+  flex: 1;
+
+  h2 {
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    margin: 0;
+    color: $text-muted;
+  }
+}
+
+.review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-heading {
+  h3 {
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    margin: 0;
+    color: $text-muted;
+  }
+}
+
+.review-card {
+  padding: 1rem;
+  background: white;
+
+  &.correct {
+    border-left: 6px solid $success;
+  }
+
+  &.incorrect {
+    border-left: 6px solid $accent;
+  }
+}
+
+.review-top {
+  margin-bottom: 0.8rem;
+
+  h4 {
+    margin: 0;
+  }
+
+  span {
+    font-weight: 800;
+    color: $text-muted;
+  }
+}
+
+.review-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  p {
+    margin: 0;
+    color: $text-main;
+  }
+}
+
+@media (max-width: 900px) {
+  .lesson-header,
+  .results-summary,
+  .results-actions,
+  .navigation-controls,
+  .review-top {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  .lesson-header,
+  .intro-card,
+  .progress-panel,
+  .question-card,
+  .navigation-controls,
+  .results-screen,
+  .review-card {
+    padding: 1.15rem;
+    border-radius: 22px;
+  }
+}
