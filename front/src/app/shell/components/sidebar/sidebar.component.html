@@ -1,0 +1,60 @@
+<nav [class.pb]="navExpanded" [class.squeeze]="!navExpanded">
+  <button (click)="toggleSidebar(!navExpanded)" [ngClass]="{ open: navExpanded }" class="toggle-icon" type="button">
+    {{ navExpanded ? '←' : '→' }}
+  </button>
+
+  <a class="logo-container" routerLink="/dashboard">
+    <span class="logo-icon">🌱</span>
+    <div class="logo-copy">
+      <p>Aprender y crecer</p>
+      <h4 translate>APP_NAME</h4>
+    </div>
+  </a>
+
+  <div class="sidebar-story">
+    <p class="story-tag">Offline-first</p>
+    <h5>Una experiencia pensada para seguir aprendiendo incluso lejos de la señal.</h5>
+  </div>
+
+  <div class="navbar-menu-items" dir="auto">
+    @for (item of sidebarItems; track item; let i = $index) {
+      @if (shellService.allowedAccess(item)) {
+        <div class="menu">
+          @if (!item.divider) {
+            <a (click)="activateSidebarItem(i)" [class.active]="item.active" [ngClass]="{ disabled: item.disabled }" class="menu-item" id="menu-item-{{ i }}" [routerLink]="item.href || undefined" routerLinkActive="active">
+              <div class="item">
+                @if (item.icon) {
+                  <span class="menu-icon">{{ item.icon }}</span>
+                }
+                <span class="menu-title">{{ item.title | translate }}</span>
+              </div>
+              @if (item.subItems && item.subItems.length) {
+                <span [ngClass]="{ open: sidebarExtendedItem === i }" class="submenu-icon">⌄</span>
+              }
+            </a>
+            @if (item.subItems && item.subItems.length) {
+              <ul [style.display]="sidebarExtendedItem === i ? 'block' : 'none'" class="sub-menu-items">
+                @for (subItem of item.subItems; track subItem) {
+                  @if (shellService.allowedAccess(subItem)) {
+                    <li [class.disabled]="subItem.disabled">
+                      <a (click)="activateSidebarSubItem(i, subItem)" [ngClass]="{ disabled: subItem.disabled }" [routerLink]="subItem.href || undefined" routerLinkActive="active">
+                        <span>{{ subItem.title | translate }}</span>
+                      </a>
+                    </li>
+                  }
+                }
+              </ul>
+            }
+          } @else {
+            <span class="divider"></span>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="footer-badge">Comunidad rural</div>
+    <p>Contenidos breves, claros y útiles para que cada estudiante avance a su ritmo.</p>
+  </div>
+</nav>

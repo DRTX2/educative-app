@@ -1,0 +1,145 @@
+<div class="lesson-detail-page">
+  <div *ngIf="!lesson" class="loading-screen">
+    <div class="spinner"></div>
+    <p>Cargando lección...</p>
+  </div>
+
+  <ng-container *ngIf="lesson && !answered && question">
+    <section class="lesson-header">
+      <button class="back-button" type="button" (click)="backToLessons()">Volver</button>
+
+      <div class="header-copy">
+        <span class="eyebrow">{{ lesson.category | titlecase }}</span>
+        <h1>{{ lesson.title }}</h1>
+        <p>{{ lesson.description }}</p>
+      </div>
+
+      <div class="header-badge">
+        <strong>{{ getQuestionCounter() }}</strong>
+        <span>{{ getProgressPercentage() }}% de avance</span>
+      </div>
+    </section>
+
+    <section class="intro-card" *ngIf="lesson.content.introduction">
+      <h2>Antes de empezar</h2>
+      <p>{{ lesson.content.introduction }}</p>
+    </section>
+
+    <section class="progress-panel">
+      <div class="progress-meta">
+        <span>Pregunta {{ getQuestionCounter() }}</span>
+        <span>{{ getProgressPercentage() }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-top">
+        <span class="question-step">Paso {{ currentQuestion + 1 }}</span>
+        <button *ngIf="question.hint" class="hint-button" type="button" (click)="toggleHint()">
+          {{ showHint ? 'Ocultar pista' : 'Ver pista' }}
+        </button>
+      </div>
+
+      <h2>{{ question.question }}</h2>
+
+      <div class="hint-box" *ngIf="showHint && question.hint">
+        {{ question.hint }}
+      </div>
+
+      <div class="options-list">
+        <button
+          type="button"
+          class="option-card"
+          *ngFor="let option of question.options"
+          [class.selected]="selectedAnswer === option.id"
+          (click)="selectAnswer(option.id)"
+        >
+          <span class="option-code">{{ option.id }}</span>
+          <span>{{ option.text }}</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="navigation-controls">
+      <button class="ghost-button" type="button" (click)="previousQuestion()" [disabled]="currentQuestion === 0">
+        Anterior
+      </button>
+
+      <button
+        class="primary-button"
+        type="button"
+        *ngIf="lesson && currentQuestion < lesson.content.questions.length - 1"
+        (click)="nextQuestion()"
+        [disabled]="!selectedAnswer"
+      >
+        Siguiente
+      </button>
+
+      <button
+        class="primary-button"
+        type="button"
+        *ngIf="lesson && currentQuestion === lesson.content.questions.length - 1"
+        (click)="submitAnswers()"
+        [disabled]="!selectedAnswer || isSubmitting"
+      >
+        {{ isSubmitting ? 'Guardando...' : 'Finalizar lección' }}
+      </button>
+    </section>
+
+    <p class="keyboard-tip">Consejo: también puedes usar las flechas izquierda y derecha del teclado.</p>
+  </ng-container>
+
+  <section *ngIf="lesson && answered" class="results-screen" [class]="getScoreClass()">
+    <div class="results-summary">
+      <div class="score-chip">
+        <strong>{{ score }}%</strong>
+        <span>resultado final</span>
+      </div>
+
+      <div class="results-copy">
+        <span class="eyebrow">Lección completada</span>
+        <h2>{{ getScoreMessage() }}</h2>
+        <p>
+          Respondiste correctamente {{ correctAnswersCount }} de
+          {{ lesson.content.questions.length }} preguntas.
+        </p>
+      </div>
+    </div>
+
+    <div class="results-actions">
+      <button class="primary-button" type="button" (click)="restartLesson()">Intentar otra vez</button>
+      <button class="ghost-button" type="button" (click)="openFeedback()">Compartir experiencia</button>
+      <a class="ghost-link" [routerLink]="['/dashboard']">Volver al inicio</a>
+    </div>
+
+    <div class="review-section">
+      <div class="section-heading">
+        <h3>Revisión de respuestas</h3>
+        <p>Así el resultado no se queda solo en una nota: se convierte en aprendizaje útil.</p>
+      </div>
+
+      <article
+        class="review-card"
+        *ngFor="let reviewQuestion of lesson.content.questions; let i = index"
+        [class.correct]="isCorrect(reviewQuestion, i)"
+        [class.incorrect]="!isCorrect(reviewQuestion, i)"
+      >
+        <div class="review-top">
+          <h4>{{ i + 1 }}. {{ reviewQuestion.question }}</h4>
+          <span>{{ isCorrect(reviewQuestion, i) ? 'Correcta' : 'Para reforzar' }}</span>
+        </div>
+
+        <div class="review-lines">
+          <p><strong>Tu respuesta:</strong> {{ getSelectedOption(reviewQuestion, i) }}</p>
+          <p><strong>Respuesta esperada:</strong> {{ getCorrectOption(reviewQuestion) }}</p>
+          <p><strong>Explicación:</strong> {{ reviewQuestion.explanation }}</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <app-feedback-modal [show]="showFeedbackModal" (closed)="closeFeedback()"></app-feedback-modal>
+</div>

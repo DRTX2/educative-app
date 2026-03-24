@@ -1,0 +1,81 @@
+<div class="auth-container">
+  <div class="auth-box glass">
+    <div class="auth-header">
+      <h2 translate>Register</h2>
+      <p translate>Create a new account</p>
+    </div>
+
+    <form (ngSubmit)="register()" #registerForm="ngForm">
+      <div class="auth-row">
+        <div class="input-field">
+          <label translate>First Name</label>
+          <div class="input-wrapper">
+            <input
+              [(ngModel)]="firstName"
+              name="firstName"
+              required
+              type="text"
+              autocomplete="off"
+              [placeholder]="'First Name' | translate"
+            />
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label translate>Last Name</label>
+          <div class="input-wrapper">
+            <input
+              [(ngModel)]="lastName"
+              name="lastName"
+              required
+              type="text"
+              autocomplete="off"
+              [placeholder]="'Last Name' | translate"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="input-field">
+        <label translate>Email</label>
+        <div class="input-wrapper">
+          <input
+            [(ngModel)]="email"
+            name="email"
+            required
+            type="email"
+            autocomplete="email"
+            [placeholder]="'Email' | translate"
+          />
+        </div>
+      </div>
+
+      <div class="input-field">
+        <label translate>Password</label>
+        <div class="input-wrapper">
+          <input
+            [(ngModel)]="password"
+            name="password"
+            required
+            type="password"
+            autocomplete="new-password"
+            [placeholder]="'Password' | translate"
+          />
+        </div>
+      </div>
+
+      <button [disabled]="registerForm.invalid" class="btn-primary" type="submit">
+        {{ 'Register' | translate }}
+      </button>
+
+      <div class="auth-footer">
+        <p translate>Already have an account?</p>
+        <a routerLink="/login">{{ 'Login' | translate }}</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="lang-selector">
+  <app-language-selector [openAbove]="true"></app-language-selector>
+</div>
